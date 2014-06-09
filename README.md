@@ -1,14 +1,11 @@
 # ttr
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure implementation of the board game [Ticket to Ride](http://www.daysofwonder.com/tickettoride/en/usa/overview/).
 
-## Usage
+## Why?
 
-FIXME
+Ticket to Ride (ttr) is basically a board game about graph traversal. I've been curious about graph databases and the like for awhile and decided this would be a good context to look into them. I wound up settling on [Neo4j Community Edition](http://www.neo4j.org/download).
 
 ## License
 
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Source Copyright © 2014 Matt DeBoard. Distributed under the Eclipse Public License, the same as Clojure uses. See the file COPYING.
