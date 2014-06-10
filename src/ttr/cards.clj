@@ -66,6 +66,8 @@ This function splits the deck of train cards into n decks of 4 cards,
 where n is the number of players. Each player's deck state is updated with
 the values from one of the stacks."
   [players]
+  ;; TODO: Look into whether `take-nth` might not be better here, and hew
+  ;; closer to real-world shufflin'.
   (doseq [p players]
     (let [deck (:deck p)]
       (dosync (alter deck concat (take 4 @train-deck))
