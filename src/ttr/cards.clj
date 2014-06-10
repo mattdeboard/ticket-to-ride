@@ -72,3 +72,15 @@ the values from one of the stacks."
     (let [deck (:deck p)]
       (dosync (alter deck concat (take 4 @train-deck))
               (ref-set train-deck (drop 4 @train-deck))))))
+
+(defn draw!
+  "I suspect this probably wouldn't be very safe in a high-concurrency
+scenario. The 'take' might have an old image of `train-deck' etc.
+
+Anyway I'm ok with it since only one player will be drawing from the deck
+at a time."
+  [n]
+  (let [cards (take n @train-deck)]
+    (dosync
+     (ref-set train-deck (drop n @train-deck)))
+    cards))
