@@ -6,6 +6,7 @@
   [name color]
   {:name name
    :deck (ref [])
+   :destinations (ref [])
    :points (ref 0)
    :pieces-count (ref 45)
    :pieces-color color})
@@ -35,9 +36,10 @@ Also, the discard pile is updated to include any newly used cards."
      (alter points + score))))
 
 (defn reset-player! [player]
-  (let [{:keys [deck points pieces-count]} player]
+  (let [{:keys [deck points pieces-count destinations]} player]
     (dosync
      (ref-set deck [])
+     (ref-set destinations [])
      (ref-set points 0)
      (ref-set pieces-count 45))))
 
