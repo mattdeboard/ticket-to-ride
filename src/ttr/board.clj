@@ -261,14 +261,14 @@ Example:
   (group-by-many [{:a 1 :b 2 :c 3} {:a 7 :b 12 :c -4}] [:a :c])
   >>> {#{1 3} {:a 1 :b 2 :c 3} #{7 -4} {:a 7 :b 12 :c -4}}
 "
-  [m ks]
+  [ks m]
   (let [f (fn [x]
             {(-> x (select-keys ks) vals set) x})]
     (apply merge (map f m))))
 
 ;; Create an "index" of the edges/routes, so that looking up a particular
 ;; route is easy.
-(def edges-index (delay (group-by-many edges [:a :b :color])))
+(def edges-index (delay (group-by-many [:a :b :color] edges)))
 
 (defn reset-route!
   "Reset the state of the route to unclaimed."
