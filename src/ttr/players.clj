@@ -28,7 +28,6 @@ Also, the discard pile is updated to include any newly used cards."
                         (apply concat))
         discards (filter #(= color %) @deck)
         num-left (- in-hand cost)]
-    (println discards)
     (dosync
      (ref-set deck (concat stay-cards (repeat num-left color)))
      (alter discard-pile concat discards)
