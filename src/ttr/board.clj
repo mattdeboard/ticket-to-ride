@@ -253,13 +253,22 @@ Example:
   [m ks]
   (-> m (select-keys ks) vals))
 
-(defn- index-edge
-  "Return a hash map where the value is `edge', and the key is the set of
-keys [:a :b :color]."
-  [edge]
-  {(-> edge (select-keys [:a :b :color]) vals set) edge})
+(defn group-by-many
+  "Like `group-by', but allows grouping by multiple keys.
 
-(def edges-index (delay (apply merge (map index-edge edges))))
+Example:
+
+  (group-by-many [{:a 1 :b 2 :c 3} {:a 7 :b 12 :c -4}] [:a :c])
+  >>> {#{1 3} {:a 1 :b 2 :c 3} #{7 -4} {:a 7 :b 12 :c -4}}
+"
+  [m ks]
+  (let [f (fn [x]
+            {(-> x (select-keys ks) vals set) x})]
+    (apply merge (map f m))))
+
+;; Create an "index" of the edges/routes, so that looking up a particular
+;; route is easy.
+(def edges-index (delay (group-by-many edges [:a :b :color])))
 
 (defn reset-route!
   "Reset the state of the route to unclaimed."
