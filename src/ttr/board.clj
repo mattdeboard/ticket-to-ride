@@ -1,18 +1,7 @@
-(ns ^{:doc "This namespace is concerned entirely with the board. If you are not
-running Neo4j, the graph database stuff obviously will not work.
+(ns ttr.board
+  (:require [clojure.core.match :refer [match]]
+            [ttr.players :refer [update-player!]]))
 
-Additionally, neo4j really won't be necessary for playing the game itself,
-but it's being used here frankly because I think there are some cool
-opportunities for game analysis. That is, stuff that has nothing to do with
-playing the game itself."}
-  ttr.board
-  (:require [clojurewerkz.neocons.rest :as nr]
-            [clojurewerkz.neocons.rest.nodes :as nn]
-            [clojurewerkz.neocons.rest.labels :as nl]
-            [clojurewerkz.neocons.rest.relationships :as nrl]
-            [clojurewerkz.neocons.rest.cypher :as cy]))
-
-(def neo4j-url "http://localhost:7474/db/data")
 (def vertices
   [
    {:name "Atlanta"}
@@ -55,146 +44,292 @@ playing the game itself."}
 
 (def edges
   [
-   {:a "Atlanta" :b "Charleston" :cost 2 :color "gray"}
-   {:a "Atlanta" :b "Miami" :cost 5 :color "blue"}
-   {:a "Atlanta" :b "Nashville" :cost 1 :color "gray"}
-   {:a "Atlanta" :b "New Orleans" :cost 4 :color "orange"}
-   {:a "Atlanta" :b "New Orleans" :cost 4 :color "yellow"}
-   {:a "Atlanta" :b "Raleigh" :cost 2 :color "gray"}
-   {:a "Boston" :b "Montreal" :cost 2 :color "gray"}
-   {:a "Boston" :b "Montreal" :cost 2 :color "gray"}
-   {:a "Boston" :b "New York" :cost 2 :color "red"}
-   {:a "Boston" :b "New York" :cost 2 :color "yellow"}
-   {:a "Calgary" :b "Helena" :cost 4 :color "gray"}
-   {:a "Calgary" :b "Seattle" :cost 4 :color "gray"}
-   {:a "Calgary" :b "Vancouver" :cost 3 :color "gray"}
-   {:a "Calgary" :b "Winnipeg" :cost 6 :color "white"}
-   {:a "Charleston" :b "Miami" :cost 4 :color "pink"}
-   {:a "Charleston" :b "Raleigh" :cost 1 :color "gray"}
-   {:a "Chicago" :b "Duluth" :cost 3 :color "red"}
-   {:a "Chicago" :b "Omaha" :cost 4 :color "blue"}
-   {:a "Chicago" :b "Pittsburgh" :cost 3 :color "black"}
-   {:a "Chicago" :b "Pittsburgh" :cost 3 :color "orange"}
-   {:a "Chicago" :b "Saint Louis" :cost 2 :color "green"}
-   {:a "Chicago" :b "Saint Louis" :cost 2 :color "white"}
-   {:a "Chicago" :b "Toronto" :cost 4 :color "white"}
-   {:a "Dallas" :b "El Paso" :cost 4 :color "red"}
-   {:a "Dallas" :b "Houston" :cost 1 :color "gray"}
-   {:a "Dallas" :b "Houston" :cost 1 :color "gray"}
-   {:a "Dallas" :b "Little Rock" :cost 2 :color "gray"}
-   {:a "Dallas" :b "Oklahoma City" :cost 2 :color "gray"}
-   {:a "Dallas" :b "Oklahoma City" :cost 2 :color "gray"}
-   {:a "Denver" :b "Helena" :cost 4 :color "green"}
-   {:a "Denver" :b "Kansas City" :cost 4 :color "black"}
-   {:a "Denver" :b "Kansas City" :cost 4 :color "orange"}
-   {:a "Denver" :b "Oklahoma City" :cost 4 :color "red"}
-   {:a "Denver" :b "Omaha" :cost 4 :color "pink"}
-   {:a "Denver" :b "Phoenix" :cost 4 :color "white"}
-   {:a "Denver" :b "Salt Lake City" :cost 3 :color "red"}
-   {:a "Denver" :b "Salt Lake City" :cost 3 :color "yellow"}
-   {:a "Denver" :b "Santa Fe" :cost 2 :color "gray"}
-   {:a "Duluth" :b "Helena" :cost 6 :color "orange"}
-   {:a "Duluth" :b "Omaha" :cost 2 :color "gray"}
-   {:a "Duluth" :b "Omaha" :cost 2 :color "gray"}
-   {:a "Duluth" :b "Sault St. Marie" :cost 3 :color "gray"}
-   {:a "Duluth" :b "Toronto" :cost 6 :color "pink"}
-   {:a "Duluth" :b "Winnipeg" :cost 4 :color "black"}
-   {:a "El Paso" :b "Houston" :cost 6 :color "green"}
-   {:a "El Paso" :b "Los Angeles" :cost 6 :color "black"}
-   {:a "El Paso" :b "Oklahoma City" :cost 5 :color "yellow"}
-   {:a "El Paso" :b "Phoenix" :cost 3 :color "gray"}
-   {:a "El Paso" :b "Santa Fe" :cost 2 :color "gray"}
-   {:a "Helena" :b "Calgary" :cost 4 :color "gray"}
-   {:a "Helena" :b "Omaha" :cost 5 :color "red"}
-   {:a "Helena" :b "Seattle" :cost 6 :color "yellow"}
-   {:a "Helena" :b "Winnipeg" :cost 4 :color "blue"}
-   {:a "Houston":b "New Orleans" :cost 2 :color "gray"}
-   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color "gray"}
-   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color "gray"}
-   {:a "Kansas City" :b "Omaha" :cost 1 :color "gray"}
-   {:a "Kansas City" :b "Omaha" :cost 1 :color "gray"}
-   {:a "Kansas City" :b "Saint Louis" :cost 2 :color "blue"}
-   {:a "Kansas City" :b "Saint Louis" :cost 2 :color "pink"}
-   {:a "Las Vegas" :b "Los Angeles" :cost 2 :color "gray"}
-   {:a "Las Vegas" :b "Salt Lake City" :cost 3 :color "orange"}
-   {:a "Little Rock" :b "Nashville" :cost 3 :color "white"}
-   {:a "Little Rock" :b "New Orleans" :cost 3 :color "green"}
-   {:a "Little Rock" :b "Oklahoma City" :cost 2 :color "gray"}
-   {:a "Little Rock" :b "Saint Louis" :cost 2 :color "gray"}
-   {:a "Los Angeles" :b "Phoenix" :cost 2 :color "black"}
-   {:a "Los Angeles" :b "San Francisco" :cost 3 :color "pink"}
-   {:a "Los Angeles" :b "San Francisco" :cost 3 :color "yellow"}
-   {:a "Miami" :b "New Orleans" :cost 6 :color "red"}
-   {:a "Montreal" :b "New York" :cost 3 :color "blue"}
-   {:a "Montreal" :b "Sault St. Marie" :cost 5 :color "black"}
-   {:a "Montreal" :b "Toronto" :cost 3 :color "gray"}
-   {:a "Nashville" :b "Pittsburgh" :cost 4 :color "yellow"}
-   {:a "Nashville" :b "Raleigh" :cost 3 :color "black"}
-   {:a "Nashville" :b "Saint Louis" :cost 2 :color "gray"}
-   {:a "New York" :b "Pittsburgh" :cost 2 :color "green"}
-   {:a "New York" :b "Pittsburgh" :cost 2 :color "white"}
-   {:a "New York" :b "Washington DC" :cost 2 :color "black"}
-   {:a "New York" :b "Washington DC" :cost 2 :color "orange"}
-   {:a "Phoenix" :b "Santa Fe" :cost 3 :color "gray"}
-   {:a "Pittsburgh" :b "Saint Louis" :cost 5 :color "green"}
-   {:a "Portland" :b "Salt Lake City" :cost 6 :color "blue"}
-   {:a "Portland" :b "San Francisco" :cost 5 :color "green"}
-   {:a "Portland" :b "San Francisco" :cost 5 :color "pink"}
-   {:a "Portland" :b "Seattle" :cost 1 :color "gray"}
-   {:a "Portland" :b "Seattle" :cost 1 :color "gray"}
-   {:a "Raleigh" :b "Washington DC" :cost 2 :color "gray"}
-   {:a "Saint Louis" :b "" :cost 2 :color "gray"}
-   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color "orange"}
-   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color "white"}
-   {:a "Sault St. Marie" :b "Toronto" :cost 2 :color "gray"}
-   {:a "Sault St. Marie" :b "Winnipeg" :cost 6 :color "gray"}
-   {:a "Seattle" :b "Vancouver" :cost 1 :color "gray"}
+   {:a "Atlanta" :b "Charleston" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Atlanta" :b "Miami" :cost 5 :color "blue"
+    :state (ref {:claimed false :by nil})}
+   {:a "Atlanta" :b "Nashville" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Atlanta" :b "New Orleans" :cost 4 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Atlanta" :b "New Orleans" :cost 4 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "Atlanta" :b "Raleigh" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Boston" :b "Montreal" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Boston" :b "Montreal" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Boston" :b "New York" :cost 2 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Boston" :b "New York" :cost 2 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "Calgary" :b "Helena" :cost 4 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Calgary" :b "Seattle" :cost 4 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Calgary" :b "Vancouver" :cost 3 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Calgary" :b "Winnipeg" :cost 6 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "Charleston" :b "Miami" :cost 4 :color "pink"
+    :state (ref {:claimed false :by nil})}
+   {:a "Charleston" :b "Raleigh" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Duluth" :cost 3 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Omaha" :cost 4 :color "blue"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Pittsburgh" :cost 3 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Pittsburgh" :cost 3 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Saint Louis" :cost 2 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Saint Louis" :cost 2 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "Chicago" :b "Toronto" :cost 4 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "Dallas" :b "El Paso" :cost 4 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Dallas" :b "Houston" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Dallas" :b "Houston" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Dallas" :b "Little Rock" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Dallas" :b "Oklahoma City" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Dallas" :b "Oklahoma City" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Helena" :cost 4 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Kansas City" :cost 4 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Kansas City" :cost 4 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Oklahoma City" :cost 4 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Omaha" :cost 4 :color "pink"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Phoenix" :cost 4 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Salt Lake City" :cost 3 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Salt Lake City" :cost 3 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "Denver" :b "Santa Fe" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Duluth" :b "Helena" :cost 6 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Duluth" :b "Omaha" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Duluth" :b "Omaha" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Duluth" :b "Sault St. Marie" :cost 3 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Duluth" :b "Toronto" :cost 6 :color "pink"
+    :state (ref {:claimed false :by nil})}
+   {:a "Duluth" :b "Winnipeg" :cost 4 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "El Paso" :b "Houston" :cost 6 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "El Paso" :b "Los Angeles" :cost 6 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "El Paso" :b "Oklahoma City" :cost 5 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "El Paso" :b "Phoenix" :cost 3 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "El Paso" :b "Santa Fe" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Helena" :b "Calgary" :cost 4 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Helena" :b "Omaha" :cost 5 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Helena" :b "Seattle" :cost 6 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "Helena" :b "Winnipeg" :cost 4 :color "blue"
+    :state (ref {:claimed false :by nil})}
+   {:a "Houston":b "New Orleans" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Kansas City" :b "Omaha" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Kansas City" :b "Omaha" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Kansas City" :b "Saint Louis" :cost 2 :color "blue"
+    :state (ref {:claimed false :by nil})}
+   {:a "Kansas City" :b "Saint Louis" :cost 2 :color "pink"
+    :state (ref {:claimed false :by nil})}
+   {:a "Las Vegas" :b "Los Angeles" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Las Vegas" :b "Salt Lake City" :cost 3 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Little Rock" :b "Nashville" :cost 3 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "Little Rock" :b "New Orleans" :cost 3 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "Little Rock" :b "Oklahoma City" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Little Rock" :b "Saint Louis" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Los Angeles" :b "Phoenix" :cost 2 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "Los Angeles" :b "San Francisco" :cost 3 :color "pink"
+    :state (ref {:claimed false :by nil})}
+   {:a "Los Angeles" :b "San Francisco" :cost 3 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "Miami" :b "New Orleans" :cost 6 :color "red"
+    :state (ref {:claimed false :by nil})}
+   {:a "Montreal" :b "New York" :cost 3 :color "blue"
+    :state (ref {:claimed false :by nil})}
+   {:a "Montreal" :b "Sault St. Marie" :cost 5 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "Montreal" :b "Toronto" :cost 3 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Nashville" :b "Pittsburgh" :cost 4 :color "yellow"
+    :state (ref {:claimed false :by nil})}
+   {:a "Nashville" :b "Raleigh" :cost 3 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "Nashville" :b "Saint Louis" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "New York" :b "Pittsburgh" :cost 2 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "New York" :b "Pittsburgh" :cost 2 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "New York" :b "Washington DC" :cost 2 :color "black"
+    :state (ref {:claimed false :by nil})}
+   {:a "New York" :b "Washington DC" :cost 2 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Phoenix" :b "Santa Fe" :cost 3 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Pittsburgh" :b "Saint Louis" :cost 5 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "Portland" :b "Salt Lake City" :cost 6 :color "blue"
+    :state (ref {:claimed false :by nil})}
+   {:a "Portland" :b "San Francisco" :cost 5 :color "green"
+    :state (ref {:claimed false :by nil})}
+   {:a "Portland" :b "San Francisco" :cost 5 :color "pink"
+    :state (ref {:claimed false :by nil})}
+   {:a "Portland" :b "Seattle" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Portland" :b "Seattle" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Raleigh" :b "Washington DC" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Saint Louis" :b "" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color "orange"
+    :state (ref {:claimed false :by nil})}
+   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color "white"
+    :state (ref {:claimed false :by nil})}
+   {:a "Sault St. Marie" :b "Toronto" :cost 2 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Sault St. Marie" :b "Winnipeg" :cost 6 :color "gray"
+    :state (ref {:claimed false :by nil})}
+   {:a "Seattle" :b "Vancouver" :cost 1 :color "gray"
+    :state (ref {:claimed false :by nil})}
    ])
 
-(defn create-idx-city-name
-  "Create an index on city name in neo4j."
-  []
-  (let [conn (nr/connect neo4j-url)]
-    (cy/query conn "create constraint on (n:City) assert n.name is unique")))
+(def scoring
+  {1 1
+   2 2
+   3 4
+   4 7
+   5 10
+   6 15})
 
-(defn create-node
-  "Creates a node (aka a city or stop in TTR).
+(defn select-vals
+  "Returns the values for the keys in the collection `ks'.
 
-The only metadata for a node is the name of the city. All other interesting
-data are attached to the edge/route."
-  [vertex]
-  (let [conn (nr/connect neo4j-url)
-        node (nn/create conn vertex)]
-    (nl/add conn node :City)))
+Example:
+  ;; returns `'(1 2)`
+  (let [m {:a 1 :b 2 :c 3}]
+    (select-vals m [:a :b]))
+"
+  [m ks]
+  (-> m (select-keys ks) vals))
 
-(defn create-all-nodes []
-  (map vertices create-node))
-
-(defn create-edge
-  "Create an edge (aka a route in Ticket to Ride terms) with appropriate
-metadata.
-
-Metadata for routes is composed of color & cost. The latter is how many
-train cards of a particular color is will take to claim the route."
+(defn- index-edge
+  "Return a hash map where the value is `edge', and the key is the set of
+keys [:a :b :color]."
   [edge]
-  (create-idx-city-name)
-  (let [conn (nr/connect neo4j-url)
-        {:keys [a b color cost]} edge]
-    (cy/query conn
-              "
-match (c1:City), (c2:City)
-where c1.name = {name1} and c2.name = {name2}
-create (c1)-[r1:Route {color: {color}, cost: {cost}}]->(c2)
-return r1"
-              {:name1 a :name2 b :color color :cost cost})))
+  {(-> edge (select-keys [:a :b :color]) vals set) edge})
 
-(defn create-all-edges []
-  (map create-edge edges))
+(def edges-index (delay (apply merge (map index-edge edges))))
 
-(defn fetch-node [name]
-  (let [conn (nr/connect neo4j-url)]
-    (cy/tquery conn
-               "
-match (city:City {name: {name}})-[:route]->end
-return end limit 1"
-               {:name name})))
+(defn reset-route!
+  "Reset the state of the route to unclaimed."
+  [route]
+  (dosync
+   (ref-set (:state route) {:claimed false :by nil})))
+
+(defn get-route
+  "Get a route (defined in `edges' above) from the index of edges.
+
+`k' is a set containing the values of the :a, :b, and :color keys. Example:
+
+  ;; returns {:a \"Seattle\" :b \"Vancouver\" :cost 1 :color \"gray\"
+  ;;          :state (ref {:claimed false :by nil})}
+  (get-route #{\"Seattle\" \"gray\" \"Vancouver\"})
+"
+  [k]
+  (get @edges-index k))
+
+(defn claim-route
+  "Claim a particular route for a player.
+
+There is a lot going on here, and could probably use a refactor. That said,
+here is a rundown:
+
+  - find the colors from the player's deck that could concievably be used to
+claim this route. It seemed like the right thing to do was to group the player's
+hand by card color. Then, count each color.
+
+  - of the card groups (e.g. `[[:red :red :red] [:blue :blue]]` that exist in
+sufficient numbers in the player's hand, find which ones can meet the cost of
+the route. If the route color is 'gray', this is all we have to do. Naively, I'm
+taking the first matching color group and removing those from the player's hand.
+
+  - If the route does have a color, it pretty much works the same, logically.
+(That's what the `or` function is doing in the `fn` for `filterv`.) This way
+there's no crazy special-casing to handle gray. Well... there is, but it's
+pretty localized.
+
+  - check to ensure the player has enough train cars left to make this move
+
+  - check to ensure the route isn't already claimed
+
+If all this turns out in the player's favor, update the state of the route to
+'claimed', and finally toss the player up to `update-player!` to update the
+player's state."
+  [player route]
+  (let [{:keys [color cost state]} route
+        {:keys [deck pieces-count]} player
+        in-hand (count (filter #{color} @deck))
+        valid-colors (map #(keyword (first %))
+                          (filterv
+                           (fn [g]
+                             (and
+                              ;; TODO: Count prismatic cards toward the count
+                              ;; here since they stand in for any color.
+                              (>= (apply count (rest g)) cost)
+                              (or (= (name (first g)) color)
+                                  (= "gray" color))))
+                           (group-by identity @deck)))]
+    (match [(empty? valid-colors)
+            (>= @pieces-count cost)
+            (not (:claimed @state))]
+           [false true true]
+           (do
+             (dosync
+              (ref-set state {:claimed true :by player}))
+             (update-player! player (first valid-colors) cost (get scoring cost))
+             {:ok player})
+           [true _ _] {:error (str "Insufficient " color " cards")}
+           [_ false _] {:error "Insufficient train cars"}
+           [_ _ false] {:error "That route is claimed"})))
+

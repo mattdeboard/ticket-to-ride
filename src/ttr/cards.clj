@@ -1,5 +1,5 @@
 (ns ttr.cards
-  (require [ttr.shuffle :refer :all]))
+  (:require [ttr.shuffle :refer :all]))
 
 ;; All the destination cards, their start/end points, and the point
 ;; value of each.
@@ -56,16 +56,17 @@ of cards of a single color ('prismatic' being a color)."
   [train]
   (repeat (:count train) (:color train)))
 
-(def train-deck (ref (mongean (mapcat build-deck trains) 7)))
+(def discard-pile (ref []))
+(def train-deck (ref (mongean (mapcat build-color-deck trains) 7)))
 
 (defn deal-trains!
   "Perform initial deal of train cards.
 
 This function splits the deck of train cards into n decks of 4 cards,
-where n is the number of players."
+where n is the number of players. Each player's deck state is updated with
+the values from one of the stacks."
   [players]
-  (for [i players]
-    (let [r (ref [])]
-      (dosync (alter r concat (take 4 @train-deck))
-              (ref-set train-deck (drop 4 @train-deck)))
-      r)))
+  (doseq [p players]
+    (let [deck (:deck p)]
+      (dosync (alter deck concat (take 4 @train-deck))
+              (ref-set train-deck (drop 4 @train-deck))))))
