@@ -56,8 +56,19 @@ of cards of a single color ('prismatic' being a color)."
   [train]
   (repeat (:count train) (:color train)))
 
+(def destination-deck (ref (mongean destinations 7)))
 (def discard-pile (ref []))
-(def train-deck (ref (mongean (mapcat build-color-deck trains) 7)))
+(def face-up-deck (ref []))
+(def train-deck (ref []))
+
+(defn- train-decks!
+  "Initialize state for the train decks: face-down and face-up."
+  []
+  (let [cards (mongean (mapcat build-color-deck trains) 7)
+        [face-up face-down] (split-at 5 cards)]
+    (dosync
+     (ref-set train-deck face-down)
+     (ref-set face-up-deck face-up))))
 
 (defn deal-trains!
   "Perform initial deal of train cards.
@@ -74,13 +85,11 @@ the values from one of the stacks."
               (ref-set train-deck (drop 4 @train-deck))))))
 
 (defn draw!
-  "I suspect this probably wouldn't be very safe in a high-concurrency
-scenario. The 'take' might have an old image of `train-deck' etc.
-
-Anyway I'm ok with it since only one player will be drawing from the deck
-at a time."
-  [n]
-  (let [cards (take n @train-deck)]
+  "Return a set of cards from the given deck."
+  [n deck]
+  ;; TODO: Handle the rule that says you can only draw a single train card
+  ;; on a turn if you draw a face-up locomotive card.
+  (let [cards (take n @deck)]
     (dosync
-     (ref-set train-deck (drop n @train-deck)))
+     (ref-set deck (drop n @deck)))
     cards))
