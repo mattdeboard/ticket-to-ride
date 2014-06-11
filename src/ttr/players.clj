@@ -1,5 +1,5 @@
 (ns ttr.players
-  (:require [ttr.cards :refer [discard-pile]]))
+  (:require [ttr.cards :refer [discard-deck]]))
 
 (defn new-player
   "Create a hashmap for a new player."
@@ -31,7 +31,7 @@ Also, the discard pile is updated to include any newly used cards."
         num-left (- in-hand cost)]
     (dosync
      (ref-set deck (concat stay-cards (repeat num-left color)))
-     (alter discard-pile concat discards)
+     (alter discard-deck concat discards)
      (alter pieces-count - cost)
      (alter points + score))))
 

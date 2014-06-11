@@ -264,7 +264,7 @@ Example:
   [ks m]
   (let [f (fn [x]
             {(-> x (select-keys ks) vals set) x})]
-    (apply merge (map f m))))
+    (into {} (map f m))))
 
 ;; Create an "index" of the edges/routes, so that looking up a particular
 ;; route is easy.

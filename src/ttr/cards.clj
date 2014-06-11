@@ -35,6 +35,33 @@
    {:a "New York" :b"Atlanta" :points 6}
    {:a "Montreal" :b"New Orleans" :points 13}])
 
+(defn deck-take!
+  "Remove `n' cards from `deck', returning those cards.
+
+This is used to simulate the 'card drawing' action."
+  [n deck]
+  (dosync
+   (let [[cards r] (split-at n @deck)]
+     (ref-set deck r)
+     cards)))
+
+(defn deck-put!
+  "Put `cards' at the end of `deck'.
+
+This is used to simulate replacing cards that have been discarded. This
+should not be used against `trains-deck', as there is a discrete `discard-deck'
+that is used. This is not the case with `destination-deck', where the discarded
+cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
+  [cards deck]
+  (dosync
+   (alter deck concat cards)))
+
+(defn deck-set!
+  "Set the value of ref `deck' to `cards'."
+  [cards deck]
+  (dosync
+   (ref-set deck cards)))
+
 ;; Data about the train cards. This is used to build the communal deck of
 ;; train cards.
 (def trains
@@ -50,27 +77,26 @@
    {:color :prismatic :count 14}
    ])
 
-(defn- build-color-deck
+(defn build-color-deck
   "Use the information in the `trains' vector to create a collection
 of cards of a single color ('prismatic' being a color)."
   [train]
   (repeat (:count train) (:color train)))
 
-(def destination-deck (ref (mongean destinations 7)))
-(def discard-pile (ref []))
+(def destination-deck (ref (shuffle destinations)))
+(def discard-deck (ref []))
 (def face-up-deck (ref []))
 (def train-deck (ref []))
 
-(defn- train-decks!
+(defn build-decks
   "Initialize state for the train decks: face-down and face-up."
   []
-  (let [cards (mongean (mapcat build-color-deck trains) 7)
+  (let [cards (shuffle (mapcat build-color-deck trains))
         [face-up face-down] (split-at 5 cards)]
-    (dosync
-     (ref-set train-deck face-down)
-     (ref-set face-up-deck face-up))))
+    (deck-set! face-down train-deck)
+    (deck-set! face-up face-up-deck)))
 
-(defn deal-trains!
+(defn deal-trains
   "Perform initial deal of train cards.
 
 This function splits the deck of train cards into n decks of 4 cards,
@@ -80,16 +106,14 @@ the values from one of the stacks."
   ;; TODO: Look into whether `take-nth` might not be better here, and hew
   ;; closer to real-world shufflin'.
   (doseq [p players]
-    (let [deck (:deck p)]
-      (dosync (alter deck concat (take 4 @train-deck))
-              (ref-set train-deck (drop 4 @train-deck))))))
+    (let [deck (:deck p)
+          [cards r] (split-at 4 @train-deck)]
+      (deck-put! cards deck)
+      (deck-set! r train-deck))))
 
-(defn draw!
+(defn draw
   "Return a set of cards from the given deck."
   [n deck]
   ;; TODO: Handle the rule that says you can only draw a single train card
   ;; on a turn if you draw a face-up locomotive card.
-  (let [cards (take n @deck)]
-    (dosync
-     (ref-set deck (drop n @deck)))
-    cards))
+  (deck-take! n deck))
