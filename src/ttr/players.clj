@@ -13,7 +13,7 @@
    :pieces-count (ref starting-pcs)
    :pieces-color color})
 
-(defn ref-inc!
+(defn rinc!
   "Increase the value of a ref, which is an element in hash map `player'
 with key `k' with a numerical value."
   [n player ^clojure.lang.Keyword k]
@@ -21,7 +21,7 @@ with key `k' with a numerical value."
    (let [s (get player k)]
      (alter s + n))))
 
-(defn ref-dec!
+(defn rdec!
   "Decrease the value of a ref, which is an element in hash map `player'
 with key `k', with a numerical value."
   [n player ^clojure.lang.Keyword k]
@@ -29,7 +29,7 @@ with key `k', with a numerical value."
    (let [s (get player k)]
      (alter s - n))))
 
-(defn ref-set!
+(defn rset!
   "Set the value of a ref, which is an element in hash map `player'
 with key `k', to value `v'."
   [v player ^clojure.lang.Keyword k]
@@ -58,8 +58,8 @@ Also, the discard pile is updated to include any newly used cards."
     (do
       (deck-set! deck (concat stay-cards (repeat num-left color)))
       (deck-put! discard-deck discards)
-      (ref-inc! score player :points)
-      (ref-dec! cost player :pieces-count))))
+      (rinc! score player :points)
+      (rdec! cost player :pieces-count))))
 
 (defn reset-player
   [player]
@@ -67,5 +67,5 @@ Also, the discard pile is updated to include any newly used cards."
     (do
       (deck-set! [] deck)
       (deck-set! [] destinations)
-      (ref-set! :points 0 player)
-      (ref-set! :pieces-count starting-pcs))))
+      (rset! :points 0 player)
+      (rset! :pieces-count starting-pcs))))
