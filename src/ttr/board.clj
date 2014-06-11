@@ -1,6 +1,6 @@
 (ns ttr.board
   (:require [clojure.core.match :refer [match]]
-            [ttr.players :refer [update-player!]]))
+            [ttr.players :refer [update-player]]))
 
 (def vertices
   [
@@ -336,7 +336,7 @@ player's state."
            (do
              (dosync
               (ref-set state {:claimed true :by player}))
-             (update-player! player (first valid-colors) cost (get scoring cost))
+             (update-player player (first valid-colors) cost (get scoring cost))
              {:ok player})
            [true _ _] {:error (str "Insufficient " color " cards")}
            [_ false _] {:error "Insufficient train cars"}

@@ -1,5 +1,5 @@
 (ns ttr.cards
-  (:require [ttr.shuffle :refer :all]))
+  (:require [clojure.core.match :refer [match]]))
 
 ;; All the destination cards, their start/end points, and the point
 ;; value of each.
@@ -92,6 +92,25 @@ cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
   (dosync
    (ref-set deck cards)))
 
+(defn complete!
+  "Mark a route card as complete."
+  [card player]
+  (dosync
+   (alter card merge {:complete true :by player})))
+
+(defn draw
+  "Return a set of cards from the given deck."
+  [n deck]
+  ;; TODO: Handle the rule that says you can only draw a single train card
+  ;; on a turn if you draw a face-up locomotive card.
+  (deck-take! n deck))
+
+(defn discard
+  [cards ^clojure.lang.Keyword deck-type]
+  (match deck-type
+         :dest (deck-put! cards destination-deck)
+         :train (deck-put! cards discard-deck)))
+
 ;; Data about the train cards. This is used to build the communal deck of
 ;; train cards.
 (def trains
@@ -141,9 +160,11 @@ the values from one of the stacks."
       (deck-put! cards deck)
       (deck-set! r train-deck))))
 
-(defn draw
-  "Return a set of cards from the given deck."
-  [n deck]
-  ;; TODO: Handle the rule that says you can only draw a single train card
-  ;; on a turn if you draw a face-up locomotive card.
-  (deck-take! n deck))
+(defn deal-dests
+  [players]
+  (doseq [p players]
+    (let [deck (:destinations p)
+          cards (draw 3 destination-deck)]
+      (deck-put! cards deck))))
+
+
