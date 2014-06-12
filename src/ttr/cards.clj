@@ -155,8 +155,8 @@ There are four types of cards:
   [cards ^clojure.lang.Keyword deck-type]
   ;; TODO: Actually remove the discarded cards from the player's hand
   (match deck-type
-         :dest (deck-put! cards destination-deck)
-         _ (deck-put! cards discard-deck)))
+         (:or :pdest :dest) (deck-put! cards destination-deck)
+         :else (deck-put! cards discard-deck)))
 
 (defn deal-trains
   "Perform initial deal of train cards.
