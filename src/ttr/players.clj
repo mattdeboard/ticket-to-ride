@@ -7,8 +7,8 @@
   "Create a hashmap for a new player."
   [name color]
   {:name name
-   :deck (ref [])
-   :destinations (ref [])
+   :deck {:type :ptrain :cards (ref [])}
+   :destinations {:type :pdest :cards (ref [])}
    :points (ref 0)
    :pieces-count (ref starting-pcs)
    :pieces-color color})

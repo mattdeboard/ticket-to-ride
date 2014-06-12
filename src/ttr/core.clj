@@ -5,9 +5,9 @@
 
 (defn start
   [player-data]
+  (tc/build-decks)
   (let [players (map #(apply tp/new-player %) player-data)]
     (do
-      (tc/build-decks)
       (tc/deal-trains players)
       (tc/deal-dests players))
     players))

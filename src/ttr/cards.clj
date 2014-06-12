@@ -65,52 +65,6 @@
    {:a "Montreal" :b"New Orleans" :points 13
     :state (ref {:completed false :by nil})}])
 
-(defn deck-take!
-  "Remove `n' cards from `deck', returning those cards.
-
-This is used to simulate the 'card drawing' action."
-  [n deck]
-  (dosync
-   (let [[cards r] (split-at n @deck)]
-     (ref-set deck r)
-     cards)))
-
-(defn deck-put!
-  "Put `cards' at the end of `deck'.
-
-This is used to simulate replacing cards that have been discarded. This
-should not be used against `trains-deck', as there is a discrete `discard-deck'
-that is used. This is not the case with `destination-deck', where the discarded
-cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
-  [cards deck]
-  (dosync
-   (alter deck concat cards)))
-
-(defn deck-set!
-  "Set the value of ref `deck' to `cards'."
-  [cards deck]
-  (dosync
-   (ref-set deck cards)))
-
-(defn complete!
-  "Mark a route card as complete."
-  [card player]
-  (dosync
-   (alter card merge {:complete true :by player})))
-
-(defn draw
-  "Return a set of cards from the given deck."
-  [n deck]
-  ;; TODO: Handle the rule that says you can only draw a single train card
-  ;; on a turn if you draw a face-up locomotive card.
-  (deck-take! n deck))
-
-(defn discard
-  [cards ^clojure.lang.Keyword deck-type]
-  (match deck-type
-         :dest (deck-put! cards destination-deck)
-         :train (deck-put! cards discard-deck)))
-
 ;; Data about the train cards. This is used to build the communal deck of
 ;; train cards.
 (def trains
@@ -132,10 +86,43 @@ of cards of a single color ('prismatic' being a color)."
   [train]
   (repeat (:count train) (:color train)))
 
-(def destination-deck (ref (shuffle destinations)))
-(def discard-deck (ref []))
-(def face-up-deck (ref []))
-(def train-deck (ref []))
+(def destination-deck {:type :dest :cards (ref (shuffle destinations))})
+(def discard-deck {:type :discard :cards (ref [])})
+(def face-up-deck {:type :face-up :cards (ref [])})
+(def train-deck {:type :train :cards (ref [])})
+
+(defn deck-take!
+  "Remove `n' cards from `deck', returning those cards.
+
+This is used to simulate the 'card drawing' action."
+  [n deck]
+  (dosync
+   (let [[cards r] (split-at n (deref (:cards deck)))]
+     (ref-set (:cards deck) r)
+     cards)))
+
+(defn deck-put!
+  "Put `cards' at the end of `deck'.
+
+This is used to simulate replacing cards that have been discarded. This
+should not be used against `trains-deck', as there is a discrete `discard-deck'
+that is used. This is not the case with `destination-deck', where the discarded
+cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
+  [cards deck]
+  (dosync
+   (alter (:cards deck) concat cards)))
+
+(defn deck-set!
+  "Set the value of ref `deck' to `cards'."
+  [cards deck]
+  (dosync
+   (ref-set (:cards deck) cards)))
+
+(defn complete!
+  "Mark a route card as complete."
+  [route player]
+  (dosync
+   (alter (:state route) merge {:complete true :by player})))
 
 (defn build-decks
   "Initialize state for the train decks: face-down and face-up."
@@ -144,6 +131,32 @@ of cards of a single color ('prismatic' being a color)."
         [face-up face-down] (split-at 5 cards)]
     (deck-set! face-down train-deck)
     (deck-set! face-up face-up-deck)))
+
+(defn draw
+  "Return a set of cards from the given deck."
+  [n deck]
+  ;; TODO: Handle the rule that says you can only draw a single train card
+  ;; on a turn if you draw a face-up locomotive card.
+  (deck-take! n deck))
+
+(defn discard
+  "Put discarded cards into the discard pile.
+
+There are four types of cards:
+
+1. train card in the draw pile (:train)
+
+2. destination card in the draw pile (:dest)
+
+3. train card in player's hand (:ptrain)
+
+4. destination card in the player's hand (:pdest)
+"
+  [cards ^clojure.lang.Keyword deck-type]
+  ;; TODO: Actually remove the discarded cards from the player's hand
+  (match deck-type
+         :dest (deck-put! cards destination-deck)
+         _ (deck-put! cards discard-deck)))
 
 (defn deal-trains
   "Perform initial deal of train cards.
@@ -156,7 +169,7 @@ the values from one of the stacks."
   ;; closer to real-world shufflin'.
   (doseq [p players]
     (let [deck (:deck p)
-          [cards r] (split-at 4 @train-deck)]
+          [cards r] (split-at 4 (deref (:cards train-deck)))]
       (deck-put! cards deck)
       (deck-set! r train-deck))))
 
@@ -166,5 +179,3 @@ the values from one of the stacks."
     (let [deck (:destinations p)
           cards (draw 3 destination-deck)]
       (deck-put! cards deck))))
-
-
