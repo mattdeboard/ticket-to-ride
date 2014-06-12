@@ -171,11 +171,13 @@ the values from one of the stacks."
     (let [deck (:deck p)
           [cards r] (split-at 4 (deref (:cards train-deck)))]
       (deck-put! cards deck)
-      (deck-set! r train-deck))))
+      (deck-set! r train-deck)))
+  players)
 
 (defn deal-dests
   [players]
   (doseq [p players]
     (let [deck (:destinations p)
           cards (draw 3 destination-deck)]
-      (deck-put! cards deck))))
+      (deck-put! cards deck)))
+  players)
