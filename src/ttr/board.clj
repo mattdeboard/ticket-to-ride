@@ -276,6 +276,11 @@ Example:
   (dosync
    (ref-set (:state route) {:claimed false :by nil})))
 
+(defn claim-route!
+  [route player]
+  (dosync
+   (ref-set (:state route) {:claimed true :by player})))
+
 (defn get-route
   "Get a route (defined in `edges' above) from the index of edges.
 
