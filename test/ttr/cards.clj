@@ -29,5 +29,3 @@
         keepers (drop 2 @deck)
         _ (discard discards dtype)]
     (is (= (deref (:cards discard-deck)) discards))))
-
-
