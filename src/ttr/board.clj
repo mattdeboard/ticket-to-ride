@@ -318,7 +318,8 @@ player's state."
   [player route]
   (let [{:keys [color cost state]} route
         {:keys [deck pieces-count]} player
-        in-hand (count (filter #{color} @deck))
+        cards (:cards deck)
+        in-hand (count (filter #{color} @cards))
         valid-colors (map #(keyword (first %))
                           (filterv
                            (fn [g]
@@ -328,7 +329,7 @@ player's state."
                               (>= (apply count (rest g)) cost)
                               (or (= (name (first g)) color)
                                   (= "gray" color))))
-                           (group-by identity @deck)))]
+                           (group-by identity @cards)))]
     (match [(empty? valid-colors)
             (>= @pieces-count cost)
             (not (:claimed @state))]
@@ -338,7 +339,7 @@ player's state."
               (ref-set state {:claimed true :by player}))
              (update-player player (first valid-colors) cost (get scoring cost))
              {:ok player})
-           [true _ _] {:error (str "Insufficient " color " cards")}
            [_ false _] {:error "Insufficient train cars"}
+           [true _ _] {:error (str "Insufficient " color " cards")}
            [_ _ false] {:error "That route is claimed"})))
 

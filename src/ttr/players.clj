@@ -46,18 +46,19 @@ as incrementing their score.
 Also, the discard pile is updated to include any newly used cards."
   [player color cost score]
   (let [{:keys [deck pieces-count points]} player
-        in-hand (count (filter #{color} @deck))
+        cards (:cards deck)
+        in-hand (count (filter #{color} @cards))
         ;; separate out the cards of target color from others
-        stay-cards (->> @deck
+        stay-cards (->> @cards
                         (group-by identity)
                         (#(dissoc % color))
                         vals
                         (apply concat))
-        discards (filter #(= color %) @deck)
+        discards (filter #(= color %) @cards)
         num-left (- in-hand cost)]
     (do
-      (deck-set! deck (concat stay-cards (repeat num-left color)))
-      (deck-put! discard-deck discards)
+      (deck-set! (concat stay-cards (repeat num-left color)) deck)
+      (deck-put! discards discard-deck)
       (rinc! score player :points)
       (rdec! cost player :pieces-count))))
 
