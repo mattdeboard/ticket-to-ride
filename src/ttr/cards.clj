@@ -130,8 +130,9 @@ cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
   (let [cards (shuffle (mapcat build-color-deck trains))
         [face-up face-down] (split-at 5 cards)]
     (deck-set! face-down train-deck)
-    (deck-set! face-up face-up-deck))
-  {:face-up face-up-deck :train-deck train-deck})
+    (deck-set! face-up face-up-deck)
+    (deck-set! [] discard-deck)
+  {:face-up face-up-deck :train-deck train-deck}))
 
 (defn draw
   "Return a set of cards from the given deck."
