@@ -321,20 +321,39 @@ If all this turns out in the player's favor, update the state of the route to
 'claimed', and finally toss the player up to `update-player!` to update the
 player's state."
   [player route]
+  (println (deref (:cards (:deck player))))
   (let [{:keys [color cost state]} route
         {:keys [deck pieces-count]} player
         cards (:cards deck)
         in-hand (count (filter #{color} @cards))
-        valid-colors (map #(keyword (first %))
-                          (filterv
-                           (fn [g]
-                             (and
-                              ;; TODO: Count prismatic cards toward the count
-                              ;; here since they stand in for any color.
-                              (>= (apply count (rest g)) cost)
-                              (or (= (name (first g)) color)
-                                  (= "gray" color))))
-                           (group-by identity @cards)))]
+        color-groups (group-by identity @cards)
+        valid-colors (filterv
+                      #(and
+                        ;; TODO: Count prismatic cards toward the count
+                        ;; here since they stand in for any color.
+                        ;; TODO: Refactor this portion for clarity.
+
+                        ;; This first >= check ensures that for a given
+                        ;; color group, there are enough cards of that
+                        ;; color to cover the cost of the route.
+                        ;; e.g. `g` will look like
+                        ;; `[:red [:red :red :red]]`, so if cost is 3
+                        ;; or less, this check will evaluate to true.
+                        (>= (apply count (rest %)) cost)
+
+                        ;; This `or` check ensures that the color of the
+                        ;; group either 1). matches the color of the group
+                        ;; or 2). is gray (which matches any color).
+                        (or (= (name (first %)) color)
+                            (= :gray color)))
+
+                      ;; This `group-by` call is going to create a vector
+                      ;; like `[[:red [:red :red :red]]
+                      ;;        [:yellow [:yellow :yellow]]]`
+                      ;; This nested vector will be filtered based on
+                      ;; whether the "cards" match the cost & color of the
+                      ;; route being claimed.
+                      (group-by identity @cards))]
     (match [(empty? valid-colors)
             (>= @pieces-count cost)
             (not (:claimed @state))]
