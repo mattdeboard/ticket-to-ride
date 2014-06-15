@@ -335,9 +335,6 @@ player's state."
         valid-colors (filterv
                       (fn [[k v]]
                         (and
-                         ;; TODO: Count prismatic cards toward the count
-                         ;; here since they stand in for any color.
-
                          ;; This first >= check ensures that for a given
                          ;; color group, there are enough cards of that
                          ;; color to cover the cost of the route.
