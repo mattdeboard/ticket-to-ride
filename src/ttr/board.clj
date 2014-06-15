@@ -342,8 +342,8 @@ player's state."
                          ;; This first >= check ensures that for a given
                          ;; color group, there are enough cards of that
                          ;; color to cover the cost of the route.
-                         ;; e.g. `g` will look like
-                         ;; `[:red [:red :red :red]]`, so if cost is 3
+                         ;; e.g. `v` will look like
+                         ;; `[:red :red :red]`, so if cost is 3
                          ;; or less, this check will evaluate to true.
                          (>= (count v) cost)
 
