@@ -331,12 +331,12 @@ player's state."
         ;; This will be filtered based on whether the "cards" match the cost &
         ;; color of the route being claimed.
         color-groups (group-by identity @cards)
+        prismatics (:prismatic color-groups)
         valid-colors (filterv
                       (fn [[k v]]
                         (and
                          ;; TODO: Count prismatic cards toward the count
                          ;; here since they stand in for any color.
-                         ;; TODO: Refactor this portion for clarity.
 
                          ;; This first >= check ensures that for a given
                          ;; color group, there are enough cards of that
@@ -344,7 +344,7 @@ player's state."
                          ;; e.g. `v` will look like
                          ;; `[:red :red :red]`, so if cost is 3
                          ;; or less, this check will evaluate to true.
-                         (>= (count v) cost)
+                         (>= (+ (count v) (count prismatics)) cost)
 
                          ;; This `or` check ensures that the color of the
                          ;; group either 1). matches the color of the group
