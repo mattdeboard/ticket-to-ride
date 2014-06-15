@@ -155,7 +155,6 @@ There are four types of cards:
 4. destination card in the player's hand (:pdest)
 "
   [cards ^clojure.lang.Keyword deck-type]
-  ;; TODO: Actually remove the discarded cards from the player's hand
   (match deck-type
          (:or :pdest :dest) (deck-put! cards destination-deck)
          :else (deck-put! cards discard-deck)))
@@ -177,6 +176,7 @@ the values from one of the stacks."
   players)
 
 (defn deal-dests
+  "Deal destination cards to players."
   [players]
   (doseq [p players]
     (let [deck (:destinations p)
