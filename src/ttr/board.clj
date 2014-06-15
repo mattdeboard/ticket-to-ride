@@ -350,7 +350,7 @@ player's state."
                          ;; This `or` check ensures that the color of the
                          ;; group either 1). matches the color of the group
                          ;; or 2). is gray (which matches any color).
-                         (or (= (name k) color)
+                         (or (= k color)
                              (= :gray color))))
                       color-groups)]
     (match [(empty? valid-colors)
