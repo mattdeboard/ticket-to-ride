@@ -1,6 +1,7 @@
 (ns ttr.players
   (:require [ttr.cards :refer :all]))
 
+;; Each train color has 45 pieces.
 (def starting-pcs 45)
 
 (defn new-player
@@ -63,6 +64,8 @@ Also, the discard pile is updated to include any newly used cards."
       (rdec! cost player :pieces-count))))
 
 (defn reset-player
+  "A convenience function to put the given player's stateful attributes back
+to their original state."
   [player]
   (let [{:keys [deck points pieces-count destinations]} player]
     (do

@@ -340,8 +340,7 @@ player's state."
             (not (:claimed @state))]
            [false true true]
            (do
-             (dosync
-              (ref-set state {:claimed true :by player}))
+             (claim-route! route player)
              (update-player player (first valid-colors) cost (get scoring cost))
              {:ok player})
            [_ false _] {:error "Insufficient train cars"}
