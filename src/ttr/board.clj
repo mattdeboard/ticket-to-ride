@@ -325,12 +325,11 @@ player's state."
         {:keys [deck pieces-count]} player
         cards (:cards deck)
         in-hand (count (filter #{color} @cards))
-        ;; This `group-by` call is going to create a vector
-        ;; like `[[:red [:red :red :red]]
-        ;;        [:yellow [:yellow :yellow]]]`
-        ;; This nested vector will be filtered based on
-        ;; whether the "cards" match the cost & color of the
-        ;; route being claimed.
+        ;; This `group-by` call is going to create a hash map
+        ;; like `{:red [:red :red :red]
+        ;;        :yellow [:yellow :yellow]}`
+        ;; This will be filtered based on whether the "cards" match the cost &
+        ;; color of the route being claimed.
         color-groups (group-by identity @cards)
         valid-colors (filterv
                       (fn [[k v]]
