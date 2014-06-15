@@ -44,193 +44,193 @@
 
 (def edges
   [
-   {:a "Atlanta" :b "Charleston" :cost 2 :color "gray"
+   {:a "Atlanta" :b "Charleston" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Atlanta" :b "Miami" :cost 5 :color "blue"
+   {:a "Atlanta" :b "Miami" :cost 5 :color :blue
     :state (ref {:claimed false :by nil})}
-   {:a "Atlanta" :b "Nashville" :cost 1 :color "gray"
+   {:a "Atlanta" :b "Nashville" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Atlanta" :b "New Orleans" :cost 4 :color "orange"
+   {:a "Atlanta" :b "New Orleans" :cost 4 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Atlanta" :b "New Orleans" :cost 4 :color "yellow"
+   {:a "Atlanta" :b "New Orleans" :cost 4 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "Atlanta" :b "Raleigh" :cost 2 :color "gray"
+   {:a "Atlanta" :b "Raleigh" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Boston" :b "Montreal" :cost 2 :color "gray"
+   {:a "Boston" :b "Montreal" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Boston" :b "Montreal" :cost 2 :color "gray"
+   {:a "Boston" :b "Montreal" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Boston" :b "New York" :cost 2 :color "red"
+   {:a "Boston" :b "New York" :cost 2 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Boston" :b "New York" :cost 2 :color "yellow"
+   {:a "Boston" :b "New York" :cost 2 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "Calgary" :b "Helena" :cost 4 :color "gray"
+   {:a "Calgary" :b "Helena" :cost 4 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Calgary" :b "Seattle" :cost 4 :color "gray"
+   {:a "Calgary" :b "Seattle" :cost 4 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Calgary" :b "Vancouver" :cost 3 :color "gray"
+   {:a "Calgary" :b "Vancouver" :cost 3 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Calgary" :b "Winnipeg" :cost 6 :color "white"
+   {:a "Calgary" :b "Winnipeg" :cost 6 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "Charleston" :b "Miami" :cost 4 :color "pink"
+   {:a "Charleston" :b "Miami" :cost 4 :color :pink
     :state (ref {:claimed false :by nil})}
-   {:a "Charleston" :b "Raleigh" :cost 1 :color "gray"
+   {:a "Charleston" :b "Raleigh" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Duluth" :cost 3 :color "red"
+   {:a "Chicago" :b "Duluth" :cost 3 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Omaha" :cost 4 :color "blue"
+   {:a "Chicago" :b "Omaha" :cost 4 :color :blue
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Pittsburgh" :cost 3 :color "black"
+   {:a "Chicago" :b "Pittsburgh" :cost 3 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Pittsburgh" :cost 3 :color "orange"
+   {:a "Chicago" :b "Pittsburgh" :cost 3 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Saint Louis" :cost 2 :color "green"
+   {:a "Chicago" :b "Saint Louis" :cost 2 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Saint Louis" :cost 2 :color "white"
+   {:a "Chicago" :b "Saint Louis" :cost 2 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "Chicago" :b "Toronto" :cost 4 :color "white"
+   {:a "Chicago" :b "Toronto" :cost 4 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "Dallas" :b "El Paso" :cost 4 :color "red"
+   {:a "Dallas" :b "El Paso" :cost 4 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Dallas" :b "Houston" :cost 1 :color "gray"
+   {:a "Dallas" :b "Houston" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Dallas" :b "Houston" :cost 1 :color "gray"
+   {:a "Dallas" :b "Houston" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Dallas" :b "Little Rock" :cost 2 :color "gray"
+   {:a "Dallas" :b "Little Rock" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Dallas" :b "Oklahoma City" :cost 2 :color "gray"
+   {:a "Dallas" :b "Oklahoma City" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Dallas" :b "Oklahoma City" :cost 2 :color "gray"
+   {:a "Dallas" :b "Oklahoma City" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Helena" :cost 4 :color "green"
+   {:a "Denver" :b "Helena" :cost 4 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Kansas City" :cost 4 :color "black"
+   {:a "Denver" :b "Kansas City" :cost 4 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Kansas City" :cost 4 :color "orange"
+   {:a "Denver" :b "Kansas City" :cost 4 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Oklahoma City" :cost 4 :color "red"
+   {:a "Denver" :b "Oklahoma City" :cost 4 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Omaha" :cost 4 :color "pink"
+   {:a "Denver" :b "Omaha" :cost 4 :color :pink
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Phoenix" :cost 4 :color "white"
+   {:a "Denver" :b "Phoenix" :cost 4 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Salt Lake City" :cost 3 :color "red"
+   {:a "Denver" :b "Salt Lake City" :cost 3 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Salt Lake City" :cost 3 :color "yellow"
+   {:a "Denver" :b "Salt Lake City" :cost 3 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "Denver" :b "Santa Fe" :cost 2 :color "gray"
+   {:a "Denver" :b "Santa Fe" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Duluth" :b "Helena" :cost 6 :color "orange"
+   {:a "Duluth" :b "Helena" :cost 6 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Duluth" :b "Omaha" :cost 2 :color "gray"
+   {:a "Duluth" :b "Omaha" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Duluth" :b "Omaha" :cost 2 :color "gray"
+   {:a "Duluth" :b "Omaha" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Duluth" :b "Sault St. Marie" :cost 3 :color "gray"
+   {:a "Duluth" :b "Sault St. Marie" :cost 3 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Duluth" :b "Toronto" :cost 6 :color "pink"
+   {:a "Duluth" :b "Toronto" :cost 6 :color :pink
     :state (ref {:claimed false :by nil})}
-   {:a "Duluth" :b "Winnipeg" :cost 4 :color "black"
+   {:a "Duluth" :b "Winnipeg" :cost 4 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "El Paso" :b "Houston" :cost 6 :color "green"
+   {:a "El Paso" :b "Houston" :cost 6 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "El Paso" :b "Los Angeles" :cost 6 :color "black"
+   {:a "El Paso" :b "Los Angeles" :cost 6 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "El Paso" :b "Oklahoma City" :cost 5 :color "yellow"
+   {:a "El Paso" :b "Oklahoma City" :cost 5 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "El Paso" :b "Phoenix" :cost 3 :color "gray"
+   {:a "El Paso" :b "Phoenix" :cost 3 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "El Paso" :b "Santa Fe" :cost 2 :color "gray"
+   {:a "El Paso" :b "Santa Fe" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Helena" :b "Calgary" :cost 4 :color "gray"
+   {:a "Helena" :b "Calgary" :cost 4 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Helena" :b "Omaha" :cost 5 :color "red"
+   {:a "Helena" :b "Omaha" :cost 5 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Helena" :b "Seattle" :cost 6 :color "yellow"
+   {:a "Helena" :b "Seattle" :cost 6 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "Helena" :b "Winnipeg" :cost 4 :color "blue"
+   {:a "Helena" :b "Winnipeg" :cost 4 :color :blue
     :state (ref {:claimed false :by nil})}
-   {:a "Houston":b "New Orleans" :cost 2 :color "gray"
+   {:a "Houston":b "New Orleans" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color "gray"
+   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color "gray"
+   {:a "Kansas City" :b "Oklahoma City" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Kansas City" :b "Omaha" :cost 1 :color "gray"
+   {:a "Kansas City" :b "Omaha" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Kansas City" :b "Omaha" :cost 1 :color "gray"
+   {:a "Kansas City" :b "Omaha" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Kansas City" :b "Saint Louis" :cost 2 :color "blue"
+   {:a "Kansas City" :b "Saint Louis" :cost 2 :color :blue
     :state (ref {:claimed false :by nil})}
-   {:a "Kansas City" :b "Saint Louis" :cost 2 :color "pink"
+   {:a "Kansas City" :b "Saint Louis" :cost 2 :color :pink
     :state (ref {:claimed false :by nil})}
-   {:a "Las Vegas" :b "Los Angeles" :cost 2 :color "gray"
+   {:a "Las Vegas" :b "Los Angeles" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Las Vegas" :b "Salt Lake City" :cost 3 :color "orange"
+   {:a "Las Vegas" :b "Salt Lake City" :cost 3 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Little Rock" :b "Nashville" :cost 3 :color "white"
+   {:a "Little Rock" :b "Nashville" :cost 3 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "Little Rock" :b "New Orleans" :cost 3 :color "green"
+   {:a "Little Rock" :b "New Orleans" :cost 3 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "Little Rock" :b "Oklahoma City" :cost 2 :color "gray"
+   {:a "Little Rock" :b "Oklahoma City" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Little Rock" :b "Saint Louis" :cost 2 :color "gray"
+   {:a "Little Rock" :b "Saint Louis" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Los Angeles" :b "Phoenix" :cost 2 :color "black"
+   {:a "Los Angeles" :b "Phoenix" :cost 2 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "Los Angeles" :b "San Francisco" :cost 3 :color "pink"
+   {:a "Los Angeles" :b "San Francisco" :cost 3 :color :pink
     :state (ref {:claimed false :by nil})}
-   {:a "Los Angeles" :b "San Francisco" :cost 3 :color "yellow"
+   {:a "Los Angeles" :b "San Francisco" :cost 3 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "Miami" :b "New Orleans" :cost 6 :color "red"
+   {:a "Miami" :b "New Orleans" :cost 6 :color :red
     :state (ref {:claimed false :by nil})}
-   {:a "Montreal" :b "New York" :cost 3 :color "blue"
+   {:a "Montreal" :b "New York" :cost 3 :color :blue
     :state (ref {:claimed false :by nil})}
-   {:a "Montreal" :b "Sault St. Marie" :cost 5 :color "black"
+   {:a "Montreal" :b "Sault St. Marie" :cost 5 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "Montreal" :b "Toronto" :cost 3 :color "gray"
+   {:a "Montreal" :b "Toronto" :cost 3 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Nashville" :b "Pittsburgh" :cost 4 :color "yellow"
+   {:a "Nashville" :b "Pittsburgh" :cost 4 :color :yellow
     :state (ref {:claimed false :by nil})}
-   {:a "Nashville" :b "Raleigh" :cost 3 :color "black"
+   {:a "Nashville" :b "Raleigh" :cost 3 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "Nashville" :b "Saint Louis" :cost 2 :color "gray"
+   {:a "Nashville" :b "Saint Louis" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "New York" :b "Pittsburgh" :cost 2 :color "green"
+   {:a "New York" :b "Pittsburgh" :cost 2 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "New York" :b "Pittsburgh" :cost 2 :color "white"
+   {:a "New York" :b "Pittsburgh" :cost 2 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "New York" :b "Washington DC" :cost 2 :color "black"
+   {:a "New York" :b "Washington DC" :cost 2 :color :black
     :state (ref {:claimed false :by nil})}
-   {:a "New York" :b "Washington DC" :cost 2 :color "orange"
+   {:a "New York" :b "Washington DC" :cost 2 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Phoenix" :b "Santa Fe" :cost 3 :color "gray"
+   {:a "Phoenix" :b "Santa Fe" :cost 3 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Pittsburgh" :b "Saint Louis" :cost 5 :color "green"
+   {:a "Pittsburgh" :b "Saint Louis" :cost 5 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "Portland" :b "Salt Lake City" :cost 6 :color "blue"
+   {:a "Portland" :b "Salt Lake City" :cost 6 :color :blue
     :state (ref {:claimed false :by nil})}
-   {:a "Portland" :b "San Francisco" :cost 5 :color "green"
+   {:a "Portland" :b "San Francisco" :cost 5 :color :green
     :state (ref {:claimed false :by nil})}
-   {:a "Portland" :b "San Francisco" :cost 5 :color "pink"
+   {:a "Portland" :b "San Francisco" :cost 5 :color :pink
     :state (ref {:claimed false :by nil})}
-   {:a "Portland" :b "Seattle" :cost 1 :color "gray"
+   {:a "Portland" :b "Seattle" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Portland" :b "Seattle" :cost 1 :color "gray"
+   {:a "Portland" :b "Seattle" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Raleigh" :b "Washington DC" :cost 2 :color "gray"
+   {:a "Raleigh" :b "Washington DC" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Saint Louis" :b "" :cost 2 :color "gray"
+   {:a "Saint Louis" :b "" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color "orange"
+   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color :orange
     :state (ref {:claimed false :by nil})}
-   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color "white"
+   {:a "Salt Lake City" :b "San Francisco" :cost 5 :color :white
     :state (ref {:claimed false :by nil})}
-   {:a "Sault St. Marie" :b "Toronto" :cost 2 :color "gray"
+   {:a "Sault St. Marie" :b "Toronto" :cost 2 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Sault St. Marie" :b "Winnipeg" :cost 6 :color "gray"
+   {:a "Sault St. Marie" :b "Winnipeg" :cost 6 :color :gray
     :state (ref {:claimed false :by nil})}
-   {:a "Seattle" :b "Vancouver" :cost 1 :color "gray"
+   {:a "Seattle" :b "Vancouver" :cost 1 :color :gray
     :state (ref {:claimed false :by nil})}
    ])
 
