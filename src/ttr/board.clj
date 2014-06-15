@@ -321,7 +321,6 @@ If all this turns out in the player's favor, update the state of the route to
 'claimed', and finally toss the player up to `update-player!` to update the
 player's state."
   [player route]
-  (println (deref (:cards (:deck player))))
   (let [{:keys [color cost state]} route
         {:keys [deck pieces-count]} player
         cards (:cards deck)
