@@ -4,10 +4,11 @@
             [ttr.players :as tp]))
 
 (defn start
+  "Accepts nested vectors like `[[\"Bob\" :red] [\"Alice\" :yellow]]` to boot
+the game."
   [player-data]
-  (tc/build-decks)
-  (let [players (map #(apply tp/new-player %) player-data)]
-    (do
-      (tc/deal-trains players)
-      (tc/deal-dests players))
-    players))
+  (let [decks (tc/build-decks)
+        state (atom {:players (into {} (map tp/a-new-player player-data))
+                     :decks decks})]
+    (tc/deal! state)
+    state))

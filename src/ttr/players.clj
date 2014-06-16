@@ -14,6 +14,13 @@
    :pieces-count (ref starting-pcs)
    :pieces-color color})
 
+(defn a-new-player
+  [[name color]]
+  {name {:routes {:cards [] :claimed []}
+         :destinations {:cards [] :completed []}
+         :score 0
+         :pieces {:color color :count 45}}})
+
 (defn rinc!
   "Increase the value of a ref, which is an element in hash map `player'
 with key `k' with a numerical value."

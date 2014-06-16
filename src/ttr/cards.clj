@@ -4,66 +4,36 @@
 ;; All the destination cards, their start/end points, and the point
 ;; value of each.
 (def destinations
-  [{:a "Dallas" :b "New York" :points 11
-    :state (ref {:completed false :by nil})}
-   {:a "Portland" :b "Phoenix" :points 11
-    :state (ref {:completed false :by nil})}
-   {:a "Vancouver" :b "Santa Fe" :points 13
-    :state (ref {:completed false :by nil})}
-   {:a "Seattle" :b "New York" :points 22
-    :state (ref {:completed false :by nil})}
-   {:a "Montreal" :b "Atlanta" :points 9
-    :state (ref {:completed false :by nil})}
-   {:a "Toronto" :b"Miami" :points 10
-    :state (ref {:completed false :by nil})}
-   {:a "Boston" :b "Miami" :points 12
-    :state (ref {:completed false :by nil})}
-   {:a "Los Angeles" :b"Chicago" :points 16
-    :state (ref {:completed false :by nil})}
-   {:a "Winnipeg" :b"Houston" :points 12
-    :state (ref {:completed false :by nil})}
-   {:a "Denver" :b"El Paso" :points 4
-    :state (ref {:completed false :by nil})}
-   {:a "Duluth" :b"Houston" :points 8
-    :state (ref {:completed false :by nil})}
-   {:a "San Francisco" :b"Atlanta" :points 17
-    :state (ref {:completed false :by nil})}
-   {:a "Denver" :b"Pittsburgh" :points 11
-    :state (ref {:completed false :by nil})}
-   {:a "Sault St. Marie" :b"Nashville" :points 8
-    :state (ref {:completed false :by nil})}
-   {:a "Winnipeg" :b"Little Rock" :points 11
-    :state (ref {:completed false :by nil})}
-   {:a "Duluth" :b"El Paso" :points 10
-    :state (ref {:completed false :by nil})}
-   {:a "Seattle" :b"Los Angeles" :points 9
-    :state (ref {:completed false :by nil})}
-   {:a "Helena" :b"Los Angeles" :points 8
-    :state (ref {:completed false :by nil})}
-   {:a "Kansas City" :b"Houston" :points 5
-    :state (ref {:completed false :by nil})}
-   {:a "Sault St. Marie" :b"Oklahoma City" :points 9
-    :state (ref {:completed false :by nil})}
-   {:a "Portland" :b"Nashville" :points 17
-    :state (ref {:completed false :by nil})}
-   {:a "Los Angeles" :b"New York" :points 21
-    :state (ref {:completed false :by nil})}
-   {:a "Chicago" :b"Santa Fe" :points 9
-    :state (ref {:completed false :by nil})}
-   {:a "Calgary" :b"Phoenix" :points 13
-    :state (ref {:completed false :by nil})}
-   {:a "Calgary" :b"Salt Lake City" :points 7
-    :state (ref {:completed false :by nil})}
-   {:a "Vancouver" :b"Montreal" :points 20
-    :state (ref {:completed false :by nil})}
-   {:a "Los Angeles" :b"Miami" :points 20
-    :state (ref {:completed false :by nil})}
-   {:a "Chicago" :b"New Orleans" :points 7
-    :state (ref {:completed false :by nil})}
-   {:a "New York" :b"Atlanta" :points 6
-    :state (ref {:completed false :by nil})}
-   {:a "Montreal" :b"New Orleans" :points 13
-    :state (ref {:completed false :by nil})}])
+  [{:a "Dallas" :b "New York" :points 11}
+   {:a "Portland" :b "Phoenix" :points 11}
+   {:a "Vancouver" :b "Santa Fe" :points 13}
+   {:a "Seattle" :b "New York" :points 22}
+   {:a "Montreal" :b "Atlanta" :points 9}
+   {:a "Toronto" :b"Miami" :points 10}
+   {:a "Boston" :b "Miami" :points 12}
+   {:a "Los Angeles" :b"Chicago" :points 16}
+   {:a "Winnipeg" :b"Houston" :points 12}
+   {:a "Denver" :b"El Paso" :points 4}
+   {:a "Duluth" :b"Houston" :points 8}
+   {:a "San Francisco" :b"Atlanta" :points 17}
+   {:a "Denver" :b"Pittsburgh" :points 11}
+   {:a "Sault St. Marie" :b"Nashville" :points 8}
+   {:a "Winnipeg" :b"Little Rock" :points 11}
+   {:a "Duluth" :b"El Paso" :points 10}
+   {:a "Seattle" :b"Los Angeles" :points 9}
+   {:a "Helena" :b"Los Angeles" :points 8}
+   {:a "Kansas City" :b"Houston" :points 5}
+   {:a "Sault St. Marie" :b"Oklahoma City" :points 9}
+   {:a "Portland" :b"Nashville" :points 17}
+   {:a "Los Angeles" :b"New York" :points 21}
+   {:a "Chicago" :b"Santa Fe" :points 9}
+   {:a "Calgary" :b"Phoenix" :points 13}
+   {:a "Calgary" :b"Salt Lake City" :points 7}
+   {:a "Vancouver" :b"Montreal" :points 20}
+   {:a "Los Angeles" :b"Miami" :points 20}
+   {:a "Chicago" :b"New Orleans" :points 7}
+   {:a "New York" :b"Atlanta" :points 6}
+   {:a "Montreal" :b"New Orleans" :points 13}])
 
 ;; Data about the train cards. This is used to build the communal deck of
 ;; train cards.
@@ -86,7 +56,7 @@ of cards of a single color ('prismatic' being a color)."
   [train]
   (repeat (:count train) (:color train)))
 
-(def destination-deck {:type :dest :cards (ref (shuffle destinations))})
+(def destination-deck {:type :destination :cards (ref (shuffle destinations))})
 (def discard-deck {:type :discard :cards (ref [])})
 (def face-up-deck {:type :face-up :cards (ref [])})
 (def train-deck {:type :train :cards (ref [])})
@@ -132,7 +102,11 @@ cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
     (deck-set! face-down train-deck)
     (deck-set! face-up face-up-deck)
     (deck-set! [] discard-deck)
-  {:face-up face-up-deck :train-deck train-deck}))
+    (deck-set! (shuffle destinations) destination-deck)
+    {:face-up {:type :face-up :cards face-up}
+     :train {:type :train :cards face-down}
+     :discard {:type :discard :cards []}
+     :destination {:type :destination :cards (shuffle destinations)}}))
 
 (defn draw
   "Return a set of cards from the given deck."
@@ -156,7 +130,7 @@ There are four types of cards:
 "
   [cards ^clojure.lang.Keyword deck-type]
   (match deck-type
-         (:or :pdest :dest) (deck-put! cards destination-deck)
+         (:or :pdest :destination) (deck-put! cards destination-deck)
          :else (deck-put! cards discard-deck)))
 
 (defn deal-trains
@@ -175,6 +149,33 @@ the values from one of the stacks."
       (deck-set! r train-deck)))
   players)
 
+(defn partition-deck
+  [deck]
+  (let [size (case (:type deck)
+               :destination 3
+               :train 4)
+        cards (:cards deck)]
+    (apply interleave (partition size cards))))
+
+(defn deal!
+  [state]
+  (loop [players (:players @state)
+         trains (partition-deck (get-in @state [:decks :train]))
+         dests (partition-deck (get-in @state [:decks :destination]))]
+    (let [[name attrs] (first players)
+          ptrain (get-in attrs [:routes :cards])
+          pdest (get-in attrs [:destination :cards])
+          train-deck (concat ptrain (take 4 trains))
+          dest-deck (concat pdest (take 3 dests))
+          trainr (drop 4 trains)
+          destr (drop 3 dests)]
+      (swap! state assoc-in [:players name :routes :cards] train-deck)
+      (swap! state assoc-in [:players name :destination :cards] dest-deck)
+      (swap! state assoc-in [:decks :train :cards] trainr)
+      (swap! state assoc-in [:decks :destination :cards] destr)
+      (if (not (empty? (rest players)))
+        (recur (rest players) trainr destr)))))
+
 (defn deal-dests
   "Deal destination cards to players."
   [players]
@@ -183,3 +184,4 @@ the values from one of the stacks."
           cards (draw 3 destination-deck)]
       (deck-put! cards deck)))
   players)
+
