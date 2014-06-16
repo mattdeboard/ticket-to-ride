@@ -9,6 +9,7 @@ the game."
   [player-data]
   (let [decks (tc/build-decks)
         state (atom {:players (into {} (map tp/a-new-player player-data))
-                     :decks decks})]
+                     :decks decks
+                     :routes {:claimed #{}}})]
     (tc/deal! state)
     state))

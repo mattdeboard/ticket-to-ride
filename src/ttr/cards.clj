@@ -106,7 +106,9 @@ cards should be put on the 'bottom' of the deck (i.e. the end of the vector)."
     {:face-up {:type :face-up :cards face-up}
      :train {:type :train :cards face-down}
      :discard {:type :discard :cards []}
-     :destination {:type :destination :cards (shuffle destinations)}}))
+     :destination {:type :destination
+                   :cards (shuffle destinations)
+                   :completed #{}}}))
 
 (defn draw
   "Return a set of cards from the given deck."
