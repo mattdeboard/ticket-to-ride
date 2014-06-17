@@ -11,8 +11,5 @@ the game."
         state (atom {:players (into {} (map tp/a-new-player player-data))
                      :decks decks
                      :routes {:claimed #{}}})]
-    (tc/deal! state)
-    (loop [routes tb/edges
-           turns-left nil]
-      )))
+    state))
 
