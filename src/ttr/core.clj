@@ -12,4 +12,7 @@ the game."
                      :decks decks
                      :routes {:claimed #{}}})]
     (tc/deal! state)
-    state))
+    (loop [routes tb/edges
+           turns-left nil]
+      )))
+

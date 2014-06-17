@@ -327,18 +327,18 @@ player's state."
                     [:players pname :routes :claimed]
                     (concat player-claimed route))
              (swap! state assoc-in
-                    [:players pname :score]
-                    (+ score cost))
-             (swap! state assoc-in
-                    [:routes :claimed]
-                    (clojure.set/union claimed-routes #{route}))
-             (swap! state assoc-in
                     [:players pname :routes :cards]
                     (let [fx (frequencies cards)
                           fy (frequencies (last valid-colors))]
                       (apply concat
                              (for [[k v] fx]
                                (repeat (- v (get fy k 0)) k)))))
+             (swap! state assoc-in
+                    [:players pname :score]
+                    (+ score cost))
+             (swap! state assoc-in
+                    [:routes :claimed]
+                    (clojure.set/union claimed-routes #{route}))
              (swap! state assoc-in
                     [:routes :claimed]
                     (clojure.set/select #(= (select-keys % [:a :b :color])
