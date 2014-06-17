@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [ttr.board :refer :all]
             [ttr.cards :refer :all]
-            [ttr.test-utils :refer :all]))
+            [ttr.utils-test :refer :all]))
 
 (deftest test-claim-route-ok
   (testing "The claim-route happy path: The route is unclaimed and the
