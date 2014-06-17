@@ -318,7 +318,7 @@ pretty localized.
   - check to ensure the route isn't already claimed
 
 If all this turns out in the player's favor, update the state of the route to
-'claimed', and finally toss the player up to `update-player!` to update the
+'claimed', and finally toss the player up to `update-player` to update the
 player's state."
   [player route]
   (let [{:keys [color cost state]} route
