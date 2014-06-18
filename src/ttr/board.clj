@@ -318,10 +318,10 @@ player's state."
         claimed-routes (get-in @state [:routes :claimed])
         score (get-in @state [:players pname :score])]
     (match [;; Check if `route` is claimed already.
-            (empty? (clojure.set/intersection #{route} claimed-routes))
+            (= #{route} (clojure.set/intersection #{route} claimed-routes))
             (empty? valid-colors)
             (>= pieces-count cost)]
-           [true false true]
+           [false false true]
            (do
              (swap! state assoc-in
                     [:players pname :routes :claimed]
@@ -345,6 +345,6 @@ player's state."
                                             (select-keys route [:a :b :color]))
                                         (set edges)))
              {:ok player})
-           [false _ _] {:error "That route is claimed"}
+           [true _ _] {:error "That route is claimed"}
            [_ true _] {:error (str "Insufficient " (name color) " cards")}
            [_ _ false] {:error "Insufficient train cars"})))

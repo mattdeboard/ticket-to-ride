@@ -2,56 +2,56 @@
   (:require [clojure.test :refer :all]
             [ttr.board :refer :all]
             [ttr.cards :refer :all]
+            [ttr.core :refer :all]
             [ttr.utils-test :refer :all]))
 
-(deftest test-claim-route-ok
+(deftest test-claim!-ok
   (testing "The claim-route happy path: The route is unclaimed and the
 player has sufficient cards & trains."
-    (let [edge {:a "Boston" :b "New York" :cost 5 :color :red
-                :state (ref {:claimed false :by nil})}
-          {:keys [cost color]} edge
-          player (test-player)
-          deck (:deck player)
-          pdeck (deck-set! (repeat cost (keyword color)) deck)]
-      (is (= {:ok player} (claim-route player edge)))
-      (reset-route! edge))))
+    (let [pname "Jim"
+          state (start [[pname :blue]])
+          route {:a "Boston" :b "New York" :cost 2 :color :red}]
+      (swap! state assoc-in [:players pname :routes :cards]
+             (repeat (:cost route) (:color route)))
+      (is (= {:ok (get (:players (deref state)) pname)}
+             (claim! state pname route))))))
 
-(deftest test-claim-route-prismatic
+(deftest text-claim!-prismatic
   (testing "Ensure prismatic cards are counted when checking whether a route
 can be claimed."
-    (let [edge {:a "Boston" :b "New York" :cost 5 :color :red
-                :state (ref {:claimed false :by nil})}
-          {:keys [cost color]} edge
-          player (test-player)
-          deck (:deck player)
-          pdeck (deck-put! (concat (repeat (- cost 2) color)
-                                   (repeat 2 :prismatic))
-                           deck)]
-      (is (= {:ok player} (claim-route player edge)))
-      (reset-route! edge))))
+    (let [pname "Jim"
+          state (start [[pname :blue]])
+          route {:a "Boston" :b "New York" :cost 2 :color :red}
+          {:keys [cost color]} route]
+      (swap! state assoc-in [:players pname :routes :cards]
+             (concat (repeat (- cost 1) color)
+                     (repeat 1 :prismatic)))
+      (is (= {:ok (get-in @state [:players pname])}
+             (claim! state pname route))))))
 
-(deftest test-claim-route-claimed
+(deftest test-claim!-claimed
   (testing "Test to ensure a route marked as claimed cannot be claimed
 again."
-    (let [edge {:a "Boston" :b "New York" :cost 5 :color :red
-                :state (ref {:claimed false :by nil})}
-          {:keys [cost color]} edge
-          player (test-player)
-          deck (:deck player)
-          pdeck (deck-set! (repeat cost (keyword color)) deck)]
-      (claim-route! edge player)
-      (is (= {:error "That route is claimed"} (claim-route player edge)))
-      (reset-route! edge))))
+    (let [jim "Jim"
+          betty "Betty"
+          state (start [[jim :blue] [betty :yellow]])
+          route {:a "Boston" :b "New York" :cost 2 :color :red}
+          {:keys [cost color]} route
+          _ (swap! state assoc-in [:players jim :routes :cards]
+                   (repeat cost color))
+          player (get-in @state [:players jim])]
+      (swap! state assoc-in [:players betty :routes :cards] (repeat cost color))
+      (claim! state betty route)
+      (is (= {:error "That route is claimed"} (claim! state jim route))))))
 
-(deftest test-claim-route-insufficient-cards
+(deftest test-claim!-insufficient-cards
   (testing "Test to ensure a route will not be claimed without the right
 quantity of the right cards."
-    (let [edge {:a "Boston" :b "New York" :cost 5 :color :red
-                :state (ref {:claimed false :by nil})}
-          {:keys [cost color]} edge
-          player (test-player)
-          deck (:deck player)
-          pdeck (deck-set! (repeat (dec cost) (keyword color)) deck)]
-      (is (= {:error (str "Insufficient " color " cards")}
-             (claim-route player edge)))
-      (reset-route! edge))))
+    (let [pname "Jim"
+          state (start [[pname :blue]])
+          route {:a "Boston" :b "New York" :cost 2 :color :red}
+          {:keys [cost color]} route]
+      (swap! state assoc-in [:players pname :routes :cards]
+             (repeat (dec cost) color))
+      (is (= {:error (str "Insufficient " (name color) " cards")}
+             (claim! state pname route))))))
