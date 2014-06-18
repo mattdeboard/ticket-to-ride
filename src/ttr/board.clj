@@ -1,6 +1,5 @@
 (ns ttr.board
-  (:require [clojure.core.match :refer [match]]
-            [ttr.players :refer [update-player]]))
+  (:require [clojure.core.match :refer [match]]))
 
 (def vertices
   [

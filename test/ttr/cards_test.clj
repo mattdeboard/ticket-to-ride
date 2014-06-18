@@ -1,8 +1,7 @@
 (ns ttr.cards-test
   (:require [clojure.test :refer :all]
             [ttr.cards :refer :all]
-            [ttr.players :refer :all]
-            [ttr.utils-test :refer :all]))
+            [ttr.players :refer :all]))
 
 (deftest test-build-color-deck
   (build-decks)
