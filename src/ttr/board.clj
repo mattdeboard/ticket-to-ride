@@ -227,12 +227,14 @@ player's state."
         score (get-in @state [:players pname :score])
         color-choice (last valid-colors)]
     (match [;; Check if `route` is claimed already.
-            (= #{route} (clojure.set/intersection #{route} claimed-routes))
+            ;; TODO: Move this check up so it short-circuits the function
+            ;; if true.
+            (clojure.set/subset? #{route} claimed-routes)
             (nil? color-choice)
             (>= pieces-count cost)]
            [false false true]
            (do
-             ;; Move the route to the player's claimed route pile.
+             ;; Add the route to the player's claimed route pile.
              (swap! state assoc-in
                     [:players pname :routes :claimed]
                     (concat player-claimed route))
@@ -253,6 +255,7 @@ player's state."
              (swap! state assoc-in
                     [:players pname :score]
                     (+ score (get scoring cost)))
+             ;; Add the route to the pile of all claimed routes
              (swap! state assoc-in
                     [:routes :claimed]
                     (clojure.set/union claimed-routes #{route}))
