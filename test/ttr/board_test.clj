@@ -9,11 +9,17 @@
 player has sufficient cards & trains."
     (let [pname "Jim"
           state (start [[pname :blue]])
-          route {:a "Boston" :b "New York" :cost 2 :color :red}]
+          dests-pre (get-in @state [:decks :destination :cards])
+          route {:a "Boston" :b "New York" :cost 2 :color :red}
+          {:keys [cost color]} route]
       (swap! state assoc-in [:players pname :routes :cards]
-             (repeat (:cost route) (:color route)))
+             (repeat cost color))
       (is (= {:ok (get (:players (deref state)) pname)}
-             (claim! state pname route))))))
+             (claim! state pname route)))
+      (is (= cost (count (get-in @state [:decks :discard :cards]))))
+      (is (= (repeat cost color) (get-in @state [:decks :discard :cards])))
+      (is (= (+ (get-in @state [:players pname :score]) (get scoring cost)))))))
+
 
 (deftest text-claim!-prismatic
   (testing "Ensure prismatic cards are counted when checking whether a route

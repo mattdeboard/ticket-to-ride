@@ -224,34 +224,38 @@ player's state."
                              (= :gray color))))
                       color-groups)
         claimed-routes (get-in @state [:routes :claimed])
-        score (get-in @state [:players pname :score])]
+        score (get-in @state [:players pname :score])
+        color-choice (last valid-colors)]
     (match [;; Check if `route` is claimed already.
             (= #{route} (clojure.set/intersection #{route} claimed-routes))
-            (empty? valid-colors)
+            (nil? color-choice)
             (>= pieces-count cost)]
            [false false true]
            (do
+             ;; Move the route to the player's claimed route pile.
              (swap! state assoc-in
                     [:players pname :routes :claimed]
                     (concat player-claimed route))
+             ;; Reduce the player's hand by the correct number of cards
              (swap! state assoc-in
                     [:players pname :routes :cards]
                     (let [fx (frequencies cards)
-                          fy (frequencies (last valid-colors))]
+                          fy (frequencies color-choice)]
                       (apply concat
                              (for [[k v] fx]
                                (repeat (- v (get fy k 0)) k)))))
+             ;; Place the used cards in the discard deck
+             (swap! state assoc-in
+                    [:decks :discard :cards]
+                    (concat (get-in @state [:decks :discard :cards])
+                            (last color-choice)))
+             ;; Increment the player's score
              (swap! state assoc-in
                     [:players pname :score]
-                    (+ score cost))
+                    (+ score (get scoring cost)))
              (swap! state assoc-in
                     [:routes :claimed]
                     (clojure.set/union claimed-routes #{route}))
-             (swap! state assoc-in
-                    [:routes :claimed]
-                    (clojure.set/select #(= (select-keys % [:a :b :color])
-                                            (select-keys route [:a :b :color]))
-                                        (set edges)))
              {:ok player})
            [true _ _] {:error "That route is claimed"}
            [_ true _] {:error (str "Insufficient " (name color) " cards")}
